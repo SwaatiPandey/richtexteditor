@@ -1,0 +1,23 @@
+html {
+  background-color: #d6d9da;
+}
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: #edf1f2;
+}
+.button {
+  padding: 7px 10px;
+  border: 1px transparent;
+  background-color: #edf1f2;
+}
+.mainContainer {
+  width: 70%;
+  margin: 5vh auto;
+  text-align: center;
+}
+.editable {
+  padding-bottom: 10vh;
+}
