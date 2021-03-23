@@ -58,28 +58,39 @@ const DNDBlock = (props) => {
       opacity: monitor.isDragging() ? 0.4 : 1,
     }),
   }));
+  // console.log(props);
+  // console.log(props.element.type);
   return (
     <>
-      <div
-        ref={preview}
-        style={{ ...style, opacity }}
-        onMouseEnter={() => setDisplayValue("inline")}
-        onMouseLeave={() => setDisplayValue("none")}
-      >
-        <div
-          ref={drop}
-          style={{ display: "flex", width: "100%", outline: "none" }}
-        >
+      {props.element.type === "link" ||
+      props.element.type === "numbered-list" ||
+      props.element.type === "bulleted-list" ? (
+        // props.element.type === "list-item"
+        <span style={{ textAlign: "left" }}>{props.children}</span>
+      ) : (
+        <>
           <div
-            contentEditable={false}
-            ref={drag}
-            style={{ width: "1rem", height: "1rem" }}
+            ref={preview}
+            style={{ ...style, opacity }}
+            onMouseEnter={() => setDisplayValue("inline")}
+            onMouseLeave={() => setDisplayValue("none")}
           >
-            <FaEllipsisV style={{ display: `${displayValue}` }} />
+            <div
+              ref={drop}
+              style={{ display: "flex", width: "100%", outline: "none" }}
+            >
+              <div
+                contentEditable={false}
+                ref={drag}
+                style={{ width: "1rem", height: "1rem" }}
+              >
+                <FaEllipsisV style={{ display: `${displayValue}` }} />
+              </div>
+              {props.children}
+            </div>
           </div>
-          {props.children}
-        </div>
-      </div>
+        </>
+      )}
     </>
   );
 };

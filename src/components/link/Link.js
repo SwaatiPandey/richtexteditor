@@ -64,7 +64,7 @@ const wrapLink = (editor, url) => {
   if (isLinkActive(editor)) {
     unwrapLink(editor);
   }
-  console.log("selection", editor);
+  // console.log("selection", editor);
   const { selection } = editor;
   const isCollapsed = selection && Range.isCollapsed(selection);
   const link = {
@@ -90,7 +90,7 @@ export const LinkButton = () => {
         onMouseDown={(event) => {
           event.preventDefault();
           const url = window.prompt("Enter the URL of the link:");
-          console.log(url);
+          // console.log(url);
           if (!url) return;
           insertLink(editor, url);
         }}
