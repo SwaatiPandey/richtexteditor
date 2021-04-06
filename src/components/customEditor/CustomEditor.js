@@ -17,6 +17,10 @@ import Checkbox from "../checkbox/Checkbox";
 import DNDBlock from "../dndBlock/dndBlock";
 import Styles from "../Styles/customEditor.module.css";
 import { EditorContext } from "../../index";
+import "react-tippy/dist/tippy.css";
+import { Tooltip } from "react-tippy";
+import Capitalize from "../capitalise/Capitalise";
+import Uppercase from "../uppercase/Uppercase";
 
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
@@ -33,29 +37,67 @@ const CustomEditor = () => {
       ),
     []
   );
+
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
       <div className={Styles.mainContainer}>
         <div className={Styles.buttonContainer}>
-          <MarkButton format="bold" icon="B" />
-          <MarkButton format="italic" icon="I" />
-          <MarkButton format="underline" icon="U" />
-          <MarkButton format="code" icon="<>" />
-          <MarkButton format="delete" icon="D" />
-          <MarkButton format="highlight" icon="M" />
-          <BlockButton format="heading-one" icon="h1" />
-          <BlockButton format="heading-two" icon="h2" />
-          <BlockButton format="block-quote" icon="''" />
-          <BlockButton format="numbered-list" icon="numbered" />
-          <BlockButton format="bulleted-list" icon="bulleted" />
-          <BlockButton format="checkbox" icon="checkbox" />
-          <InsertImageButton format="image" icon="image" />
-          <LinkButton />
-          <InsertVideoButton format="video" icon="video" />
+          <Tooltip title="Bold" position="bottom">
+            <MarkButton format="bold" icon="ri-bold" />
+          </Tooltip>
+          <Tooltip title="Italic" position="bottom">
+            <MarkButton format="italic" icon="ri-italic" />
+          </Tooltip>
+          <Tooltip title="Underline" position="bottom">
+            <MarkButton format="underline" icon="ri-underline" />
+          </Tooltip>
+          <Tooltip title="Code" position="bottom">
+            <MarkButton format="code" icon="ri-code-line" />
+          </Tooltip>
+          <Tooltip title="Delete" position="bottom">
+            <MarkButton format="delete" icon="ri-chat-delete-line" />
+          </Tooltip>
+          <Tooltip title="Highlighter" position="bottom">
+            <MarkButton format="highlight" icon="ri-mark-pen-line" />
+          </Tooltip>
+          <Tooltip title="Heading-one" position="bottom">
+            <BlockButton format="heading-one" icon="ri-h-1" />
+          </Tooltip>
+          <Tooltip title="Heading-two" position="bottom">
+            <BlockButton format="heading-two" icon="ri-h-2" />
+          </Tooltip>
+          <Tooltip title="Uppercase" position="bottom">
+            <BlockButton format="uppercase" icon="ri-app-store-line" />
+          </Tooltip>
+          <Tooltip title="Capitalize" position="bottom">
+            <BlockButton format="capitalize" icon="ri-font-size" />
+          </Tooltip>
+          <Tooltip title="Block-quote" position="bottom">
+            <BlockButton format="block-quote" icon="ri-chat-quote-line" />
+          </Tooltip>
+          <Tooltip title="Numbered-list" position="bottom">
+            <BlockButton format="numbered-list" icon="ri-list-ordered" />
+          </Tooltip>
+          <Tooltip title="Bulleted-list" position="bottom">
+            <BlockButton format="bulleted-list" icon="ri-list-unordered" />
+          </Tooltip>
+          <Tooltip title="Checkbox" position="bottom">
+            <BlockButton format="checkbox" icon="ri-checkbox-line" />
+          </Tooltip>
+          <Tooltip title="Image" position="bottom">
+            <InsertImageButton format="image" icon="ri-image-add-line" />
+          </Tooltip>
+          <Tooltip title="Link" position="bottom">
+            <LinkButton />
+          </Tooltip>
+          <Tooltip title="Video" position="bottom">
+            <InsertVideoButton format="video" icon="ri-video-line" />
+          </Tooltip>
         </div>
-        <div className={Styles.inputContainer}>
+        <div>
           <DndProvider backend={HTML5Backend}>
             <Editable
+              className={Styles.inputContainer}
               renderElement={(props) => {
                 return <DNDBlock {...props}>{renderElement(props)}</DNDBlock>;
               }}
@@ -122,9 +164,17 @@ const Element = (props) => {
     case "block-quote":
       return <blockquote {...attributes}>{children}</blockquote>;
     case "bulleted-list":
-      return <ul {...attributes}>{children}</ul>;
+      return (
+        <ul style={{ margin: 0, padding: 0 }} {...attributes}>
+          {children}
+        </ul>
+      );
     case "numbered-list":
-      return <ol {...attributes}>{children}</ol>;
+      return (
+        <ol style={{ margin: 0, padding: 0 }} {...attributes}>
+          {children}
+        </ol>
+      );
     case "heading-one":
       return <h1 {...attributes}>{children}</h1>;
     case "heading-two":
@@ -133,6 +183,10 @@ const Element = (props) => {
       return <li {...attributes}>{children}</li>;
     case "checkbox":
       return <Checkbox {...props}>{children}</Checkbox>;
+    case "capitalize":
+      return <Capitalize {...props}>{children}</Capitalize>;
+    case "uppercase":
+      return <Uppercase {...props}>{children}</Uppercase>;
     case "image":
       return <Image {...props}>{children}</Image>;
     case "link":
@@ -141,8 +195,6 @@ const Element = (props) => {
       return <Video {...props}>{children}</Video>;
     case "delete":
       return null;
-    // case "dropdown":
-    //   return <ol {...attributes}>{children}</ol>;
     default:
       return <div {...attributes}>{children}</div>;
   }
@@ -178,7 +230,7 @@ const BlockButton = ({ format, icon }) => {
         toggleBlock(editor, format);
       }}
     >
-      {icon}
+      <i className={icon}></i>
     </button>
   );
 };
@@ -193,7 +245,7 @@ const MarkButton = ({ format, icon }) => {
         toggleMark(editor, format);
       }}
     >
-      {icon}
+      <i className={icon}></i>
     </button>
   );
 };
@@ -203,40 +255,10 @@ const initialValue = [
     children: [
       {
         text:
-          "Since it's rich text, you can do things like turn a selection of text",
+          "Since it's rich text, you can do things like turn a selection of <textarea>!",
       },
     ],
   },
-  // {
-  //   type: "image",
-  //   url:
-  //     "https://images-na.ssl-images-amazon.com/images/I/61OXKrkiy-L._SL1399_.jpg",
-  //   children: [{ text: "this is jerry" }],
-  // },
-  // {
-  //   type: "checkbox",
-  //   children: [
-  //     {
-  //       text: "first Checkbox",
-  //     },
-  //   ],
-  // },
-  // {
-  //   type: "checkbox",
-  //   children: [
-  //     {
-  //       text: "Second Checkbox",
-  //     },
-  //   ],
-  // },
-  // {
-  //   type: "checkbox",
-  //   children: [
-  //     {
-  //       text: "Third Checkbox",
-  //     },
-  //   ],
-  // },
 ];
 
 export default CustomEditor;

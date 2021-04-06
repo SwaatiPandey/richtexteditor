@@ -95,7 +95,7 @@ export const LinkButton = () => {
           insertLink(editor, url);
         }}
       >
-        Link
+        <i className="ri-link"></i>
       </button>
     </div>
   );

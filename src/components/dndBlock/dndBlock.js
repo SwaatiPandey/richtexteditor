@@ -6,16 +6,7 @@ import { FaEllipsisV } from "react-icons/fa";
 import { EditorContext } from "../../index";
 
 const DNDBlock = (props) => {
-  // Normal Declaration
-  // const editorContext = useContext(EditorContext);
-  // const editor = editorContext.editor();
-  // Chaining Declaration
   const editor = useContext(EditorContext).editor();
-  // useEditor() consumes more memory so another alternative
-  // editor uses the Editor Context using the useContext Hook
-  // & this Context has the editor function in it
-  // this function is called after the Editor Context is used
-  //
   const [displayValue, setDisplayValue] = useState("none");
   const style = {
     padding: "1rem 2rem",
@@ -25,7 +16,6 @@ const DNDBlock = (props) => {
   const ref = useRef(null);
   // const editor = useEditor();
   const { element } = props;
-
   const [, drop] = useDrop({
     accept: "DNDBlock",
     hover(item, monitor) {
@@ -38,13 +28,17 @@ const DNDBlock = (props) => {
       console.log("for hover", hoverIndex);
     },
     drop(item, monitor) {
-      const dragIndex = ReactEditor.findPath(editor, item.element);
-      const hoverIndex = ReactEditor.findPath(editor, element);
-      if (dragIndex === hoverIndex) {
-        return;
+      // console.log(item.test);
+      while (item.test !== true) {
+        // console.log(item);
+        const dragIndex = ReactEditor.findPath(editor, item.element);
+        const hoverIndex = ReactEditor.findPath(editor, element);
+        if (dragIndex === hoverIndex) {
+          return;
+        }
+        moveItem(dragIndex, hoverIndex);
+        item.test = true;
       }
-
-      moveItem(dragIndex, hoverIndex);
     },
   });
 
@@ -62,11 +56,8 @@ const DNDBlock = (props) => {
   // console.log(props.element.type);
   return (
     <>
-      {props.element.type === "link" ||
-      props.element.type === "numbered-list" ||
-      props.element.type === "bulleted-list" ? (
-        // props.element.type === "list-item"
-        <span style={{ textAlign: "left" }}>{props.children}</span>
+      {props.element.type === "link" ? (
+        <> {props.children}</>
       ) : (
         <>
           <div
@@ -78,6 +69,7 @@ const DNDBlock = (props) => {
             <div
               ref={drop}
               style={{ display: "flex", width: "100%", outline: "none" }}
+              onDrag={(event) => event.stopPropagation()}
             >
               <div
                 contentEditable={false}

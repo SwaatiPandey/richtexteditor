@@ -79,7 +79,7 @@ export const InsertVideoButton = () => {
         insertVideo(editor, url);
       }}
     >
-      Video
+      <i className="ri-video-line"></i>
     </button>
   );
 };
