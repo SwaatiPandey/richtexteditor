@@ -6,16 +6,10 @@ const Uppercase = (props) => {
   if (editor.selection) {
     const { selection } = editor;
     const text = Editor.string(editor, selection);
-    let newText = "";
-    if (text === text.toUpperCase()) newText = text.toLowerCase();
-    else newText = text.toUpperCase();
-    Editor.deleteFragment(editor);
+    let newText = text.toUpperCase();
+    // Editor.deleteFragment(editor);
     Editor.insertText(editor, newText);
   }
-  return (
-    <div {...props.attributes}>
-      <span>{props.children}</span>
-    </div>
-  );
+  return <span {...props.attributes}>{props.children}</span>;
 };
 export default Uppercase;

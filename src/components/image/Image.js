@@ -2,10 +2,9 @@ import React from "react";
 import imageExtensions from "image-extensions";
 import isUrl from "is-url";
 import { Transforms } from "slate";
-// import { useEditor } from "slate-react";
-import { useContext } from "react";
+import { useEditor } from "slate-react";
 import Styles from "../Styles/customEditor.module.css";
-import { EditorContext } from "../../index";
+
 const Image = (props) => {
   console.log(props);
   return (
@@ -62,10 +61,7 @@ const insertImage = (editor, url) => {
   Transforms.insertNodes(editor, image);
 };
 export const InsertImageButton = () => {
-  // const editor = useEditor();
-  // const editorContext = useContext(EditorContext);
-  // const editor = editorContext.editor();
-  const editor = useContext(EditorContext).editor();
+  const editor = useEditor();
   return (
     <button
       className={Styles.button}

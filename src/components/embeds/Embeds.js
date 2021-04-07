@@ -2,9 +2,7 @@ import React from "react";
 import videoExtensions from "video-extensions";
 import isUrl from "is-url";
 import { Transforms } from "slate";
-// import { useEditor } from "slate-react";
-import { useContext } from "react";
-import { EditorContext } from "../../index";
+import { useEditor } from "slate-react";
 import Styles from "../Styles/customEditor.module.css";
 const Video = (props) => {
   console.log(props);
@@ -66,8 +64,7 @@ const insertVideo = (editor, url) => {
   Transforms.insertNodes(editor, video);
 };
 export const InsertVideoButton = () => {
-  // const editor = useEditor();
-  const editor = useContext(EditorContext).editor();
+  const editor = useEditor();
   return (
     <button
       className={Styles.button}

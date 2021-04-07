@@ -1,12 +1,11 @@
-import { useRef, useState, useContext } from "react";
+import { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Transforms } from "slate";
-import { ReactEditor } from "slate-react";
+import { ReactEditor, useEditor } from "slate-react";
 import { FaEllipsisV } from "react-icons/fa";
-import { EditorContext } from "../../index";
 
 const DNDBlock = (props) => {
-  const editor = useContext(EditorContext).editor();
+  const editor = useEditor();
   const [displayValue, setDisplayValue] = useState("none");
   const style = {
     padding: "1rem 2rem",
@@ -14,7 +13,6 @@ const DNDBlock = (props) => {
     display: "flex",
   };
   const ref = useRef(null);
-  // const editor = useEditor();
   const { element } = props;
   const [, drop] = useDrop({
     accept: "DNDBlock",

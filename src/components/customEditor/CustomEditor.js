@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState, useContext } from "react";
-import { Editable, withReact, useSlate, Slate } from "slate-react";
+import React, { useCallback, useMemo, useState } from "react";
+import { Editable, withReact, useSlate, useEditor, Slate } from "slate-react";
 import {
   Editor,
   Transforms,
@@ -9,20 +9,32 @@ import {
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { withHistory } from "slate-history";
-import "../../App.css";
+import { Tooltip } from "react-tippy";
+import DNDBlock from "../dndBlock/dndBlock";
+import Checkbox from "../checkbox/Checkbox";
 import Image, { InsertImageButton, withImages } from "../image/Image";
 import Link, { LinkButton, withLinks } from "../link/Link";
 import Video, { InsertVideoButton, withEmbades } from "../embeds/Embeds";
-import Checkbox from "../checkbox/Checkbox";
-import DNDBlock from "../dndBlock/dndBlock";
-import Styles from "../Styles/customEditor.module.css";
-import { EditorContext } from "../../index";
-import "react-tippy/dist/tippy.css";
-import { Tooltip } from "react-tippy";
-import Capitalize from "../capitalise/Capitalise";
 import Uppercase from "../uppercase/Uppercase";
+// import Capitalize from "../capitalise/Capitalise";
+import Styles from "../Styles/customEditor.module.css";
+import "react-tippy/dist/tippy.css";
+import "../../App.css";
 
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
+
+const initialValue = [
+  {
+    type: "paragraph",
+    children: [
+      {
+        text:
+          "Since it's rich text, you can do things like turn a selection of textarea!",
+        // https://www.youtube.com/embed/X7R-q9rsrtU
+      },
+    ],
+  },
+];
 
 const CustomEditor = () => {
   const [value, setValue] = useState(initialValue);
@@ -60,17 +72,17 @@ const CustomEditor = () => {
           <Tooltip title="Highlighter" position="bottom">
             <MarkButton format="highlight" icon="ri-mark-pen-line" />
           </Tooltip>
+          <Tooltip title="Uppercase" position="bottom">
+            <MarkButton format="uppercase" icon="ri-font-size" />
+          </Tooltip>
+          {/* <Tooltip title="Capitalize" position="bottom">
+            <MarkButton format="capitalize" icon="ri-app-store-line" />
+          </Tooltip> */}
           <Tooltip title="Heading-one" position="bottom">
             <BlockButton format="heading-one" icon="ri-h-1" />
           </Tooltip>
           <Tooltip title="Heading-two" position="bottom">
             <BlockButton format="heading-two" icon="ri-h-2" />
-          </Tooltip>
-          <Tooltip title="Uppercase" position="bottom">
-            <BlockButton format="uppercase" icon="ri-app-store-line" />
-          </Tooltip>
-          <Tooltip title="Capitalize" position="bottom">
-            <BlockButton format="capitalize" icon="ri-font-size" />
           </Tooltip>
           <Tooltip title="Block-quote" position="bottom">
             <BlockButton format="block-quote" icon="ri-chat-quote-line" />
@@ -108,6 +120,70 @@ const CustomEditor = () => {
       </div>
     </Slate>
   );
+};
+
+const Element = (props) => {
+  const { attributes, element, children } = props;
+  switch (element.type) {
+    case "block-quote":
+      return <blockquote {...attributes}>{children}</blockquote>;
+    case "bulleted-list":
+      return (
+        <ul style={{ margin: 0, padding: 0 }} {...attributes}>
+          {children}
+        </ul>
+      );
+    case "numbered-list":
+      return (
+        <ol style={{ margin: 0, padding: 0 }} {...attributes}>
+          {children}
+        </ol>
+      );
+    case "heading-one":
+      return <h1 {...attributes}>{children}</h1>;
+    case "heading-two":
+      return <h2 {...attributes}>{children}</h2>;
+    case "list-item":
+      return <li {...attributes}>{children}</li>;
+    case "checkbox":
+      return <Checkbox {...props}>{children}</Checkbox>;
+    case "image":
+      return <Image {...props}>{children}</Image>;
+    case "link":
+      return <Link {...props}>{children}</Link>;
+    case "video":
+      return <Video {...props}>{children}</Video>;
+    case "delete":
+      return null;
+    default:
+      return <div {...attributes}>{children}</div>;
+  }
+};
+
+const Leaf = (props) => {
+  let { attributes, leaf, children } = props;
+  if (leaf.bold) {
+    children = <strong>{children}</strong>;
+  }
+  if (leaf.code) {
+    children = <code>{children}</code>;
+  }
+  if (leaf.italic) {
+    children = <em>{children}</em>;
+  }
+  if (leaf.underline) {
+    children = <u>{children}</u>;
+  }
+  if (leaf.highlight) {
+    children = <span style={{ background: "yellow" }}>{children}</span>;
+  }
+  // if (leaf.capitalize) {
+  //   children = <Capitalize {...props}>{children}</Capitalize>;
+  // }
+  if (leaf.uppercase) {
+    children = <Uppercase {...props}>{children}</Uppercase>;
+  }
+  return <span {...attributes}>{children}</span>;
 };
 
 const toggleBlock = (editor, format) => {
@@ -158,69 +234,8 @@ const isMarkActive = (editor, format) => {
   return marks ? marks[format] === true : false;
 };
 
-const Element = (props) => {
-  const { attributes, element, children } = props;
-  switch (element.type) {
-    case "block-quote":
-      return <blockquote {...attributes}>{children}</blockquote>;
-    case "bulleted-list":
-      return (
-        <ul style={{ margin: 0, padding: 0 }} {...attributes}>
-          {children}
-        </ul>
-      );
-    case "numbered-list":
-      return (
-        <ol style={{ margin: 0, padding: 0 }} {...attributes}>
-          {children}
-        </ol>
-      );
-    case "heading-one":
-      return <h1 {...attributes}>{children}</h1>;
-    case "heading-two":
-      return <h2 {...attributes}>{children}</h2>;
-    case "list-item":
-      return <li {...attributes}>{children}</li>;
-    case "checkbox":
-      return <Checkbox {...props}>{children}</Checkbox>;
-    case "capitalize":
-      return <Capitalize {...props}>{children}</Capitalize>;
-    case "uppercase":
-      return <Uppercase {...props}>{children}</Uppercase>;
-    case "image":
-      return <Image {...props}>{children}</Image>;
-    case "link":
-      return <Link {...props}>{children}</Link>;
-    case "video":
-      return <Video {...props}>{children}</Video>;
-    case "delete":
-      return null;
-    default:
-      return <div {...attributes}>{children}</div>;
-  }
-};
-
-const Leaf = ({ attributes, children, leaf }) => {
-  if (leaf.bold) {
-    children = <strong>{children}</strong>;
-  }
-  if (leaf.code) {
-    children = <code>{children}</code>;
-  }
-  if (leaf.italic) {
-    children = <em>{children}</em>;
-  }
-  if (leaf.underline) {
-    children = <u>{children}</u>;
-  }
-  if (leaf.highlight) {
-    children = <span style={{ background: "yellow" }}>{children}</span>;
-  }
-  return <span {...attributes}>{children}</span>;
-};
 const BlockButton = ({ format, icon }) => {
-  // const editor = useEditor();
-  const editor = useContext(EditorContext).editor();
+  const editor = useEditor();
   const gray = "#696969";
   const [color, setColor] = useState(gray);
   return (
@@ -243,6 +258,7 @@ const BlockButton = ({ format, icon }) => {
     </button>
   );
 };
+
 const MarkButton = ({ format, icon }) => {
   const editor = useSlate();
   const gray = "#696969";
@@ -262,25 +278,10 @@ const MarkButton = ({ format, icon }) => {
         onClick={() => {
           let newColor = "#000000";
           color === gray ? setColor(newColor) : setColor(gray);
-          // : color !== gray
-          // ? setColor(gray)
-          // : setColor(newColor);
         }}
       ></i>
     </button>
   );
 };
-const initialValue = [
-  {
-    type: "paragraph",
-    children: [
-      {
-        text:
-          "Since it's rich text, you can do things like turn a selection of textarea!",
-        // https://www.youtube.com/embed/X7R-q9rsrtU
-      },
-    ],
-  },
-];
 
 export default CustomEditor;
