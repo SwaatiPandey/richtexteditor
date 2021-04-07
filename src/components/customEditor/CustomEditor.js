@@ -221,6 +221,8 @@ const Leaf = ({ attributes, children, leaf }) => {
 const BlockButton = ({ format, icon }) => {
   // const editor = useEditor();
   const editor = useContext(EditorContext).editor();
+  const gray = "#696969";
+  const [color, setColor] = useState(gray);
   return (
     <button
       className={Styles.button}
@@ -230,12 +232,27 @@ const BlockButton = ({ format, icon }) => {
         toggleBlock(editor, format);
       }}
     >
-      <i className={icon}></i>
+      <i
+        className={icon}
+        style={{ color: color }}
+        onClick={() => {
+          let newColor = "#000000";
+          {
+            color === gray
+              ? setColor(newColor)
+              : color !== gray
+              ? setColor(gray)
+              : setColor(newColor);
+          }
+        }}
+      ></i>
     </button>
   );
 };
 const MarkButton = ({ format, icon }) => {
   const editor = useSlate();
+  const gray = "#696969";
+  const [color, setColor] = useState(gray);
   return (
     <button
       className={Styles.button}
@@ -245,7 +262,20 @@ const MarkButton = ({ format, icon }) => {
         toggleMark(editor, format);
       }}
     >
-      <i className={icon}></i>
+      <i
+        className={icon}
+        style={{ color: color }}
+        onClick={() => {
+          let newColor = "#000000";
+          {
+            color === gray
+              ? setColor(newColor)
+              : color !== gray
+              ? setColor(gray)
+              : setColor(newColor);
+          }
+        }}
+      ></i>
     </button>
   );
 };
@@ -255,7 +285,8 @@ const initialValue = [
     children: [
       {
         text:
-          "Since it's rich text, you can do things like turn a selection of <textarea>!",
+          "Since it's rich text, you can do things like turn a selection of textarea!",
+        // https://www.youtube.com/embed/X7R-q9rsrtU
       },
     ],
   },

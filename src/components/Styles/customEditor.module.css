@@ -6,13 +6,11 @@ html {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  background-color: #9ca2a3;
-  padding-bottom: 10px;
+  background-color: white;
 }
 .button {
-  margin: 5px 10px;
+  margin: 5px 15px;
   border: 1px transparent;
-  background-color: #edf1f2;
 }
 .mainContainer {
   width: 70%;
@@ -20,12 +18,14 @@ html {
   text-align: center;
 }
 .inputContainer {
-  padding-top: 10px;
+  padding-top: 2px;
 }
 i {
-  font-size: 1.5rem;
-  padding: 0 2px;
-  border: 1px rgb(194, 189, 189);
-  border-left-style: solid;
-  border-right-style: solid;
+  font-size: 1.2rem;
+  color: #696969;
+  font-weight: bolder;
+}
+
+i:focus {
+  color: black;
 }
