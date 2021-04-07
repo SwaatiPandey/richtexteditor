@@ -79,7 +79,7 @@ export const InsertVideoButton = () => {
         insertVideo(editor, url);
       }}
     >
-      <i className="ri-video-line"></i>
+      <i className="ri-video-line" style={{ color: "#696969" }}></i>
     </button>
   );
 };

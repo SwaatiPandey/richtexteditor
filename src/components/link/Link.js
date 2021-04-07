@@ -95,7 +95,7 @@ export const LinkButton = () => {
           insertLink(editor, url);
         }}
       >
-        <i className="ri-link"></i>
+        <i className="ri-link" style={{ color: "#696969" }}></i>
       </button>
     </div>
   );

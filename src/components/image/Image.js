@@ -77,7 +77,7 @@ export const InsertImageButton = () => {
         insertImage(editor, url);
       }}
     >
-      <i className="ri-image-add-line"></i>
+      <i className="ri-image-add-line" style={{ color: "#696969" }}></i>
     </button>
   );
 };

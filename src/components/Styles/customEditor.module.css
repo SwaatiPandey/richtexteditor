@@ -19,13 +19,15 @@ html {
 }
 .inputContainer {
   padding-top: 2px;
+  height: 50vh;
 }
 i {
   font-size: 1.2rem;
-  color: #696969;
+  color: #413e3e;
+
   font-weight: bolder;
 }
 
-i:focus {
+/* i:focus {
   color: black;
-}
+} */

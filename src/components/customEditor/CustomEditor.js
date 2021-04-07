@@ -237,13 +237,7 @@ const BlockButton = ({ format, icon }) => {
         style={{ color: color }}
         onClick={() => {
           let newColor = "#000000";
-          {
-            color === gray
-              ? setColor(newColor)
-              : color !== gray
-              ? setColor(gray)
-              : setColor(newColor);
-          }
+          color === gray ? setColor(newColor) : setColor(gray);
         }}
       ></i>
     </button>
@@ -267,13 +261,10 @@ const MarkButton = ({ format, icon }) => {
         style={{ color: color }}
         onClick={() => {
           let newColor = "#000000";
-          {
-            color === gray
-              ? setColor(newColor)
-              : color !== gray
-              ? setColor(gray)
-              : setColor(newColor);
-          }
+          color === gray ? setColor(newColor) : setColor(gray);
+          // : color !== gray
+          // ? setColor(gray)
+          // : setColor(newColor);
         }}
       ></i>
     </button>
