@@ -19,7 +19,7 @@ html {
   text-align: center;
 }
 .inputContainer {
-  height: 75vh;
+  min-height: 75vh;
   background-color: white;
   border: 1px solid black;
 }
