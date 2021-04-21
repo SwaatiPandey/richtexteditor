@@ -4,7 +4,7 @@ import { Transforms, Editor } from "slate";
 import { ReactEditor, useEditor } from "slate-react";
 import { FaEllipsisV } from "react-icons/fa";
 import { getEmptyImage } from "react-dnd-html5-backend";
-import { CustomDragLayer } from "./dndCustomLayer";
+import DragLayer from "./dndCustomLayer";
 
 const DNDBlock = (props) => {
   const editor = useEditor();
@@ -30,6 +30,7 @@ const DNDBlock = (props) => {
       if (!monitor.isOver() && blueLine.current) {
         blueLine.current.style["opacity"] = "0";
         blueLine.current.style["border"] = "none";
+        setDragPosition(undefined);
       }
     },
     hover(item, monitor) {
@@ -40,6 +41,10 @@ const DNDBlock = (props) => {
       const hoverClientY = Math.round(clientOffset.y - hoverBoundingRect.top);
       const dragIndex = ReactEditor.findPath(editor, item.element);
       const hoverIndex = ReactEditor.findPath(editor, element);
+      const hoverBoundingLine = blueLine.current.getBoundingClientRect();
+      // console.log(hoverBoundingRect, hoverBoundingLine);
+      // console.log(hoverIndex, dragPosition);
+      // console.log(clientOffset);
       if (clientOffset.y < hoverBoundingRect.top) {
         blueLine.current.style["borderTop"] = "5px solid cyan";
         blueLine.current.style["borderBottom"] = "none";
@@ -55,9 +60,20 @@ const DNDBlock = (props) => {
       }
     },
     drop(item, monitor) {
+      const hoverBoundingRect = dndBlockRef.current.getBoundingClientRect();
+      const hoverBoundingLine = blueLine.current.getBoundingClientRect();
       const dragIndex = ReactEditor.findPath(editor, item.element);
       const hoverIndex = ReactEditor.findPath(editor, element);
-      if (dragPosition === "Top") hoverIndex[0] = hoverIndex[0] - 1;
+      // console.log(hoverBoundingLine);
+      // if (dragPosition === "Top") {
+      //   hoverIndex[0] = hoverIndex[0];
+      // } else if (dragPosition === "Bottom") {
+      //   hoverIndex[0] = hoverIndex[0] + 1;
+      // }
+      // if (hoverIndex > 0)
+      if (hoverBoundingRect.y > hoverBoundingLine.y)
+        hoverIndex[0] = hoverIndex[0];
+      else hoverIndex[0] = hoverIndex[0] + 1;
       Transforms.moveNodes(editor, { at: dragIndex, to: hoverIndex });
     },
   });
@@ -117,7 +133,6 @@ const DNDBlock = (props) => {
               </div>
             </div>
           </div>
-          <CustomDragLayer />
         </>
       )}
     </>

@@ -20,21 +20,9 @@ import Uppercase from "../uppercase/Uppercase";
 import Styles from "../Styles/customEditor.module.css";
 import "react-tippy/dist/tippy.css";
 import "../../App.css";
+import DragLayer from "../dndBlock/dndCustomLayer";
 
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
-
-const initialValue = [
-  {
-    type: "paragraph",
-    children: [
-      {
-        text:
-          "Since it's rich text, you can do things like turn a selection of textarea!",
-        // https://www.youtube.com/embed/X7R-q9rsrtU
-      },
-    ],
-  },
-];
 
 const CustomEditor = () => {
   const [value, setValue] = useState(initialValue);
@@ -110,11 +98,22 @@ const CustomEditor = () => {
           <DndProvider backend={HTML5Backend}>
             <Editable
               className={Styles.inputContainer}
+              onKeyDown={(event) => {
+                // console.log("Key Down", event.key);
+                if (event.key === "a" && event.ctrlKey) {
+                  event.preventDefault();
+                  console.log(editor);
+                  if (editor.selection) {
+                    // Transforms.Node(editor: Editor, range:)
+                  }
+                }
+              }}
               renderElement={(props) => {
                 return <DNDBlock {...props}>{renderElement(props)}</DNDBlock>;
               }}
               renderLeaf={renderLeaf}
             />
+            <DragLayer />
           </DndProvider>
         </div>
       </div>
@@ -284,4 +283,43 @@ const MarkButton = ({ format, icon }) => {
   );
 };
 
+const initialValue = [
+  {
+    type: "paragraph",
+    children: [
+      {
+        text:
+          "Since it's rich text, you can do things like turn a selection of textarea!",
+        // https://www.youtube.com/embed/X7R-q9rsrtU
+      },
+    ],
+  },
+  {
+    type: "paragraph",
+    children: [
+      {
+        text:
+          "It's rich text, you can do things like turn a selection of textarea!",
+      },
+    ],
+  },
+  {
+    type: "paragraph",
+    children: [
+      {
+        text:
+          "Contrary to popular belief, Lorem Ipsum is not simply random text.",
+      },
+    ],
+  },
+  {
+    type: "paragraph",
+    children: [
+      {
+        text:
+          "It has roots in a piece of classical Latin literature from 45 BC.",
+      },
+    ],
+  },
+];
 export default CustomEditor;
