@@ -37,7 +37,7 @@ const CustomEditor = () => {
       ),
     []
   );
-
+  // console.log(value);
   return (
     <Slate editor={editor} value={value} onChange={(value) => setValue(value)}>
       <div className={Styles.mainContainer}>
@@ -102,11 +102,33 @@ const CustomEditor = () => {
                 // console.log("Key Down", event.key);
                 if (event.key === "a" && event.ctrlKey) {
                   event.preventDefault();
-                  console.log(editor);
+                  // console.log(editor);
                   if (editor.selection) {
-                    // Transforms.Node(editor: Editor, range:)
+                    const range = Editor.range(
+                      editor,
+                      // editor.selection.anchor.path,
+                      // editor.selection.focus.path
+                      [0, 0],
+                      [editor.children.length - 1, 0]
+                    );
+                    // console.log(range);
+                    Transforms.select(editor, range);
+                    let nodes = [];
+                    for (let i = 0; i < editor.children.length; i++) {
+                      nodes.push(
+                        Editor.node(
+                          editor,
+                          Editor.range(editor, [i, 0], [i, 0])
+                        )
+                      );
+                    }
+                    // Transforms.wrapNodes(editor, nodes);
+                    // const node = Editor.node(editor, range);
+                    Editor.addMark(editor, "selection", true);
                   }
                 }
+                // else if ("condition")
+                //   Editor.removeMark(editor, "selection");
               }}
               renderElement={(props) => {
                 return <DNDBlock {...props}>{renderElement(props)}</DNDBlock>;
@@ -170,15 +192,18 @@ const Leaf = (props) => {
   if (leaf.italic) {
     children = <em>{children}</em>;
   }
+
   if (leaf.underline) {
     children = <u>{children}</u>;
   }
   if (leaf.highlight) {
     children = <span style={{ background: "yellow" }}>{children}</span>;
   }
-  // if (leaf.capitalize) {
-  //   children = <Capitalize {...props}>{children}</Capitalize>;
-  // }
+  if (leaf.selection) {
+    children = (
+      <div style={{ background: "cyan", width: "100%" }}>{children}</div>
+    );
+  }
   if (leaf.uppercase) {
     children = <Uppercase {...props}>{children}</Uppercase>;
   }

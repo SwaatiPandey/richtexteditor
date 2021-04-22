@@ -5,6 +5,15 @@ const renderComponent = (componentType, itemBeingDragged, beingDragged) => {
   switch (componentType) {
     case "DNDBlock":
       console.log(itemBeingDragged);
+      if (itemBeingDragged.element.type === "image")
+        return (
+          <div style={{ opacity: 0.2 }}>
+            <img
+              style={{ height: "300px", width: "300px", margin: "auto" }}
+              src={itemBeingDragged.element.url}
+            />
+          </div>
+        );
       return (
         <div style={{ opacity: 0.5 }}>
           {itemBeingDragged.element.children[0].text}
@@ -35,7 +44,7 @@ export default DragLayer((monitor) => {
     monitor.subscribeToOffsetChange(onOffsetChange(monitor));
     subscribedToOffsetChange = true;
   }
-
+  // console.log(monitor);
   return {
     itemBeingDragged: monitor.getItem(),
     componentType: monitor.getItemType(),
