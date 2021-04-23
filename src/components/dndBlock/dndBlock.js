@@ -1,24 +1,22 @@
 import { useState, useRef, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { Transforms, Editor } from "slate";
+import { Transforms } from "slate";
 import { ReactEditor, useEditor } from "slate-react";
 import { FaEllipsisV } from "react-icons/fa";
 import { getEmptyImage } from "react-dnd-html5-backend";
-import DragLayer from "./dndCustomLayer";
+import Styles from "../Styles/dnd.module.css";
 
 const DNDBlock = (props) => {
   const editor = useEditor();
   const [displayValue, setDisplayValue] = useState("none");
-  const [dragPosition, setDragPosition] = useState(undefined);
   const dndBlockRef = useRef(null);
-  const blueLine = useRef(null);
   const style = {
     margin: "1rem 2rem",
     backgroundColor: "white",
     display: "flex",
   };
   const { element } = props;
-  const [{ opacity }, drag, preview] = useDrag(() => ({
+  const [, drag, preview] = useDrag(() => ({
     item: { type: "DNDBlock", element: element },
     collect: (monitor) => ({
       opacity: monitor.isDragging() ? 0 : 1,
@@ -27,67 +25,51 @@ const DNDBlock = (props) => {
   const [, drop] = useDrop({
     accept: "DNDBlock",
     collect: (monitor) => {
-      if (!monitor.isOver() && blueLine.current) {
-        blueLine.current.style["opacity"] = "0";
-        blueLine.current.style["border"] = "none";
-        setDragPosition(undefined);
+      if (!monitor.isOver() && props.dndBlockRef.current) {
+        props.dndBlockRef.current.style["border"] = "none";
+        props.dndBlockRef.current.style["top"] = `-999px`;
       }
     },
     hover(item, monitor) {
       const hoverBoundingRect = dndBlockRef.current.getBoundingClientRect();
-      const hoverRectMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
-      const hoverClientY = Math.round(clientOffset.y - hoverBoundingRect.top);
-      const dragIndex = ReactEditor.findPath(editor, item.element);
-      const hoverIndex = ReactEditor.findPath(editor, element);
-      const hoverBoundingLine = blueLine.current.getBoundingClientRect();
-      // console.log(hoverBoundingRect, hoverBoundingLine);
-      // console.log(hoverIndex, dragPosition);
-      // console.log(clientOffset);
+      // const hoverRectMiddleY =
+      //   (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      // const hoverClientY = Math.round(clientOffset.y - hoverBoundingRect.top);
+      // const dragIndex = ReactEditor.findPath(editor, item.element);
+      // const hoverIndex = ReactEditor.findPath(editor, element);
+      // const hoverBoundingLine = props.dndBlockRef.current.getBoundingClientRect();
       if (clientOffset.y < hoverBoundingRect.top) {
-        blueLine.current.style["borderTop"] = "5px solid cyan";
-        blueLine.current.style["borderBottom"] = "none";
-        blueLine.current.style["opacity"] = "1";
-        blueLine.current.style["marginTop"] = "-8px";
-        setDragPosition("Top");
+        props.dndBlockRef.current.style["borderTop"] = "5px solid cyan";
+        props.dndBlockRef.current.style["top"] = `${hoverBoundingRect.top}px`;
       } else if (clientOffset.y > hoverBoundingRect.bottom) {
-        blueLine.current.style["borderTop"] = "none";
-        blueLine.current.style["borderBottom"] = "5px solid cyan";
-        blueLine.current.style["opacity"] = "1";
-        blueLine.current.style["marginTop"] = "26px";
-        setDragPosition("Bottom");
+        props.dndBlockRef.current.style["borderTop"] = "5px solid cyan";
+        props.dndBlockRef.current.style[
+          "top"
+        ] = `${hoverBoundingRect.bottom}px`;
       }
     },
     drop(item, monitor) {
       const hoverBoundingRect = dndBlockRef.current.getBoundingClientRect();
-      const hoverBoundingLine = blueLine.current.getBoundingClientRect();
+      const hoverBoundingLine = props.dndBlockRef.current.getBoundingClientRect();
       const dragIndex = ReactEditor.findPath(editor, item.element);
       const hoverIndex = ReactEditor.findPath(editor, element);
-      // console.log(hoverBoundingLine);
-      // if (dragPosition === "Top") {
-      //   hoverIndex[0] = hoverIndex[0];
-      // } else if (dragPosition === "Bottom") {
-      //   hoverIndex[0] = hoverIndex[0] + 1;
-      // }
-      // if (hoverIndex > 0)
-      if (hoverBoundingRect.y > hoverBoundingLine.y)
-        hoverIndex[0] = hoverIndex[0];
-      else hoverIndex[0] = hoverIndex[0] + 1;
+      if (hoverBoundingRect.y < hoverBoundingLine.y)
+        hoverIndex[0] = hoverIndex[0] + 1;
       Transforms.moveNodes(editor, { at: dragIndex, to: hoverIndex });
     },
   });
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, [preview]);
-  const line = {
-    width: "65%",
-    height: "5px",
-    opacity: "0",
-    caretColor: "transparent",
-    boxSizing: "border-box",
-    position: "absolute",
-  };
+  const currentIndex = editor.children.indexOf(props.element);
+  const currentAnchor = editor.selection?.anchor.path[0];
+  const currentFocus = editor.selection?.focus.path[0];
+  let select = "";
+  if (editor.selection?.anchor.offset !== editor.selection?.focus.offset) {
+    if (currentAnchor === currentFocus) select = "single";
+    else select = "all";
+  }
   return (
     <>
       {props.element.type === "link" ? (
@@ -110,11 +92,15 @@ const DNDBlock = (props) => {
               }}
             >
               <div
-                ref={blueLine}
-                contentEditable={false}
-                style={{ borderTop: "5px solid cyan", ...line }}
-              />
-              <div
+                className={
+                  props.selectAll
+                    ? select === "single"
+                      ? currentIndex === currentAnchor
+                        ? Styles["selection-halo"]
+                        : Styles[""]
+                      : Styles["selection-halo"]
+                    : Styles[""]
+                }
                 ref={dndBlockRef}
                 style={{
                   display: "flex",

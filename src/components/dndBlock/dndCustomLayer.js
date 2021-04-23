@@ -4,11 +4,12 @@ import { DragLayer } from "react-dnd";
 const renderComponent = (componentType, itemBeingDragged, beingDragged) => {
   switch (componentType) {
     case "DNDBlock":
-      console.log(itemBeingDragged);
+      // console.log(itemBeingDragged);
       if (itemBeingDragged.element.type === "image")
         return (
           <div style={{ opacity: 0.2 }}>
             <img
+              alt="logo"
               style={{ height: "300px", width: "300px", margin: "auto" }}
               src={itemBeingDragged.element.url}
             />

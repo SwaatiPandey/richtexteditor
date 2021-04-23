@@ -1,0 +1,22 @@
+.selection-halo {
+  position: relative;
+  /* margin-left: 30px; */
+}
+.selection-halo::selection,
+.selection-halo *::selection,
+.selection-halo .selection-halo::before {
+  background: transparent !important;
+  color: black !important;
+}
+.selection-halo:before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  background: var(--selection-bg-color, skyblue);
+  opacity: 0.3;
+  content: "";
+  pointer-events: none;
+}

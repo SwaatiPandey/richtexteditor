@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useRef } from "react";
 import { Editable, withReact, useSlate, useEditor, Slate } from "slate-react";
 import {
   Editor,
@@ -26,9 +26,11 @@ const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
 const CustomEditor = () => {
   const [value, setValue] = useState(initialValue);
+  const [selectAll, setSelectAll] = useState(false);
 
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
+  const dndBlockRef = useRef(null);
 
   const editor = useMemo(
     () =>
@@ -63,9 +65,6 @@ const CustomEditor = () => {
           <Tooltip title="Uppercase" position="bottom">
             <MarkButton format="uppercase" icon="ri-font-size" />
           </Tooltip>
-          {/* <Tooltip title="Capitalize" position="bottom">
-            <MarkButton format="capitalize" icon="ri-app-store-line" />
-          </Tooltip> */}
           <Tooltip title="Heading-one" position="bottom">
             <BlockButton format="heading-one" icon="ri-h-1" />
           </Tooltip>
@@ -102,40 +101,71 @@ const CustomEditor = () => {
                 // console.log("Key Down", event.key);
                 if (event.key === "a" && event.ctrlKey) {
                   event.preventDefault();
-                  // console.log(editor);
+                  setSelectAll(true);
+                  // console.log(editor.selection);
                   if (editor.selection) {
-                    const range = Editor.range(
-                      editor,
-                      // editor.selection.anchor.path,
-                      // editor.selection.focus.path
-                      [0, 0],
-                      [editor.children.length - 1, 0]
-                    );
+                    let range = null;
+                    if (
+                      editor.selection.anchor.offset ===
+                      editor.selection.focus.offset
+                    )
+                      range = Editor.range(
+                        editor,
+                        editor.selection.anchor.path,
+                        editor.selection.focus.path
+                      );
+                    else
+                      range = Editor.range(
+                        editor,
+                        [0, 0],
+                        [editor.children.length - 1, 0]
+                      );
                     // console.log(range);
                     Transforms.select(editor, range);
-                    let nodes = [];
-                    for (let i = 0; i < editor.children.length; i++) {
-                      nodes.push(
-                        Editor.node(
-                          editor,
-                          Editor.range(editor, [i, 0], [i, 0])
-                        )
-                      );
-                    }
-                    // Transforms.wrapNodes(editor, nodes);
-                    // const node = Editor.node(editor, range);
-                    Editor.addMark(editor, "selection", true);
+                    // let nodes = [];
+                    // for (let i = 0; i < editor.children.length; i++) {
+                    //   nodes.push(
+                    //     Editor.node(
+                    //       editor,
+                    //       Editor.range(editor, [i, 0], [i, 0])
+                    //     )
+                    //   );
+                    // }
                   }
                 }
-                // else if ("condition")
-                //   Editor.removeMark(editor, "selection");
+                if (!event.ctrlKey) {
+                  setSelectAll(false);
+                  Transforms.deselect(editor);
+                }
+              }}
+              onClick={(event) => {
+                setSelectAll(false);
+                Transforms.deselect(editor);
               }}
               renderElement={(props) => {
-                return <DNDBlock {...props}>{renderElement(props)}</DNDBlock>;
+                return (
+                  <DNDBlock
+                    dndBlockRef={dndBlockRef}
+                    selectAll={selectAll}
+                    {...props}
+                  >
+                    {renderElement(props)}
+                  </DNDBlock>
+                );
               }}
               renderLeaf={renderLeaf}
             />
             <DragLayer />
+            <div
+              style={{
+                position: "fixed",
+                height: "5px",
+                width: "70%",
+                top: "-999px",
+                zIndex: "999",
+              }}
+              ref={dndBlockRef}
+            ></div>
           </DndProvider>
         </div>
       </div>
