@@ -120,7 +120,7 @@ const CustomEditor = () => {
                         [0, 0],
                         [editor.children.length - 1, 0]
                       );
-                    // console.log(range);
+                    console.log(range);
                     Transforms.select(editor, range);
                     // let nodes = [];
                     // for (let i = 0; i < editor.children.length; i++) {
@@ -133,14 +133,24 @@ const CustomEditor = () => {
                     // }
                   }
                 }
-                if (!event.ctrlKey) {
-                  setSelectAll(false);
-                  Transforms.deselect(editor);
+                if (!event.ctrlKey && event.key) {
+                  if (
+                    editor.selection?.anchor.offset !==
+                    editor.selection?.focus.offset
+                  ) {
+                    setSelectAll(false);
+                    Transforms.deselect(editor);
+                  }
                 }
               }}
               onClick={(event) => {
-                setSelectAll(false);
-                Transforms.deselect(editor);
+                if (
+                  editor.selection?.anchor.offset !==
+                  editor.selection?.focus.offset
+                ) {
+                  setSelectAll(false);
+                  Transforms.deselect(editor);
+                }
               }}
               renderElement={(props) => {
                 return (
